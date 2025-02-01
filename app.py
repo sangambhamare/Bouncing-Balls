@@ -7,7 +7,7 @@ html_code = """
 <html>
   <head>
     <meta charset="utf-8">
-    <title>Bouncing Grey Balls in a Rotating Sphere</title>
+    <title>Bouncing Yellow Balls in a Rotating Sphere</title>
     <!-- Include p5.js from a CDN -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.2/p5.js"></script>
   </head>
@@ -60,7 +60,8 @@ html_code = """
           push();
           translate(this.pos.x, this.pos.y, this.pos.z);
           noStroke();
-          fill(150);  // Grey color for the ball.
+          // Changed fill color from grey to yellow.
+          fill(255, 255, 0);
           sphere(this.radius);
           pop();
         }
@@ -144,13 +145,13 @@ html_code = """
 """
 
 # ----- Streamlit App Configuration -----
-st.set_page_config(page_title="Bouncing Grey Balls in Rotating Sphere")
-st.title("Bouncing Grey Balls in a Rotating Sphere")
+st.set_page_config(page_title="Bouncing Yellow Balls in Rotating Sphere")
+st.title("Bouncing Yellow Balls in a Rotating Sphere")
 
 st.markdown(
     """
 This demo uses a p5.js sketch embedded inside a Streamlit app.  
-The scene consists of 100 grey balls bouncing elastically inside a spherical container whose size is 93% of the canvas,  
+The scene consists of 100 yellow balls bouncing elastically inside a spherical container whose size is 93% of the canvas,  
 with the whole sphere slowly rotating (using a 63% scaling on the rotation speed).
 """
 )
