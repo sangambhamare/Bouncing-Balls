@@ -1,21 +1,19 @@
 import streamlit as st
 import streamlit.components.v1 as components
 
-# The HTML code embeds a p5.js sketch.
 html_code = """
 <!DOCTYPE html>
 <html>
   <head>
     <meta charset="utf-8">
     <title>Bouncing Yellow Balls in a Rotating Sphere</title>
-    <!-- Include p5.js from a CDN -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.2/p5.js"></script>
   </head>
   <body>
     <script>
       // ----- Global Variables -----
       let balls = [];
-      const numBalls = 100;
+      const numBalls = 15; // Using 15 balls instead of 100.
       const ballRadius = 10;
       let containerRadius;
       let rotationAngle = 0;
@@ -23,9 +21,7 @@ html_code = """
       // ----- Ball Class -----
       class Ball {
         constructor() {
-          // Generate a random position inside the sphere container.
-          // We pick a random radius (up to containerRadius - ballRadius)
-          // and random spherical angles.
+          // Generate a random position inside the spherical container.
           let r = random(0, containerRadius - ballRadius);
           let theta = random(0, TWO_PI);
           let phi = random(0, PI);
@@ -34,23 +30,22 @@ html_code = """
             r * sin(phi) * sin(theta),
             r * cos(phi)
           );
-          // Give the ball a random velocity (in 3D)
+          // Give the ball a random velocity in 3D.
           this.vel = createVector(random(-2, 2), random(-2, 2), random(-2, 2));
           this.radius = ballRadius;
         }
         
         update() {
-          // Move the ball
+          // Move the ball.
           this.pos.add(this.vel);
           
-          // Check collision with the spherical container.
-          // If the ball’s outer edge is outside the container, reflect its velocity.
+          // Check for collision with the spherical container.
           let d = this.pos.mag();
           if (d + this.radius > containerRadius) {
             let normal = this.pos.copy().normalize();
-            // Reposition so it stays just inside the container.
+            // Reposition so the ball stays just inside the container.
             this.pos = normal.mult(containerRadius - this.radius);
-            // Reflect the velocity: v' = v - 2*(v·n)*n
+            // Reflect the velocity: v' = v - 2*(v·n)*n.
             let dot = this.vel.dot(normal);
             this.vel.sub(normal.mult(2 * dot));
           }
@@ -60,8 +55,7 @@ html_code = """
           push();
           translate(this.pos.x, this.pos.y, this.pos.z);
           noStroke();
-          // Changed fill color from grey to yellow.
-          fill(255, 255, 0);
+          fill(255, 255, 0); // Yellow color.
           sphere(this.radius);
           pop();
         }
@@ -70,7 +64,7 @@ html_code = """
       // ----- p5.js Setup -----
       function setup() {
         createCanvas(windowWidth, windowHeight, WEBGL);
-        // Set the container radius to 93% of the minimum canvas dimension
+        // Set the container radius to 93% of the minimum canvas dimension.
         containerRadius = min(windowWidth, windowHeight) * 0.93 / 2;
         
         // Initialize the balls.
@@ -81,10 +75,9 @@ html_code = """
 
       // ----- p5.js Draw Loop -----
       function draw() {
-        background(30);  // Dark background
+        background(30);  // Dark background.
 
-        // Slowly update the rotation angle.
-        // The "63% factor" is applied here to slow down the rotation.
+        // Slowly update the rotation angle (scaled by 63%).
         rotationAngle += 0.005 * 0.63;
         rotateY(rotationAngle);
         rotateX(rotationAngle / 2);
@@ -108,18 +101,16 @@ html_code = """
             let delta = p5.Vector.sub(a.pos, b.pos);
             let dist = delta.mag();
             if (dist < a.radius + b.radius) {
-              // A collision is detected.
+              // Collision detected.
               let n = delta.copy().normalize();
-              // Determine relative velocity along the normal.
               let relVel = p5.Vector.sub(a.vel, b.vel);
               let speed = relVel.dot(n);
               if (speed < 0) {
-                // For equal masses in an elastic collision, swap the normal components.
                 let impulse = n.copy().mult(-speed);
                 a.vel.add(impulse);
                 b.vel.sub(impulse);
               }
-              // Separate overlapping balls to avoid sticking.
+              // Separate overlapping balls.
               let overlap = a.radius + b.radius - dist;
               let separation = n.copy().mult(overlap / 2);
               a.pos.add(separation);
@@ -134,7 +125,7 @@ html_code = """
         }
       }
 
-      // Resize the canvas if the window size changes.
+      // Adjust canvas size on window resize.
       function windowResized() {
         resizeCanvas(windowWidth, windowHeight);
         containerRadius = min(windowWidth, windowHeight) * 0.93 / 2;
@@ -144,17 +135,7 @@ html_code = """
 </html>
 """
 
-# ----- Streamlit App Configuration -----
 st.set_page_config(page_title="Bouncing Yellow Balls in Rotating Sphere")
 st.title("Bouncing Yellow Balls in a Rotating Sphere")
 
-st.markdown(
-    """
-This demo uses a p5.js sketch embedded inside a Streamlit app.  
-The scene consists of 100 yellow balls bouncing elastically inside a spherical container whose size is 93% of the canvas,  
-with the whole sphere slowly rotating (using a 63% scaling on the rotation speed).
-"""
-)
-
-# Embed the p5.js sketch.
 components.html(html_code, height=600, scrolling=True)
